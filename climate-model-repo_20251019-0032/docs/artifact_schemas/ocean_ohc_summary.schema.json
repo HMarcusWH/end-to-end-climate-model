@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ocean/ohc_summary.json",
+  "type": "object",
+  "required": [
+    "dHdt_Wm2"
+  ],
+  "properties": {
+    "dHdt_Wm2": {
+      "type": "number"
+    }
+  }
+}

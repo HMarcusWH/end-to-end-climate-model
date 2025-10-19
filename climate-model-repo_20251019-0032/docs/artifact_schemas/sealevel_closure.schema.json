@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "sealevel/closure.json",
+  "type": "object",
+  "required": [
+    "residual_trend_mm_per_yr"
+  ],
+  "properties": {
+    "residual_trend_mm_per_yr": {
+      "type": "number"
+    }
+  }
+}

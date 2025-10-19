@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "chem/diagnostics.json",
+  "type": "object",
+  "required": [
+    "industrial_era_ERF_total",
+    "ch4_lifetime_years"
+  ],
+  "properties": {
+    "industrial_era_ERF_total": {
+      "type": "number",
+      "description": "ERF_total for aerosols (1750\u21922019), W m-2"
+    },
+    "ch4_lifetime_years": {
+      "type": "number",
+      "minimum": 5,
+      "maximum": 20
+    }
+  },
+  "additionalProperties": true
+}

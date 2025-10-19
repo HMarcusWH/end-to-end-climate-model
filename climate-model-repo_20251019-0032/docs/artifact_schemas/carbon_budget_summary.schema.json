@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "carbon/budget_summary.json",
+  "type": "object",
+  "required": [
+    "residual_GtCO2_per_yr_decadal",
+    "airborne_fraction_multidecadal"
+  ],
+  "properties": {
+    "residual_GtCO2_per_yr_decadal": {
+      "type": "number"
+    },
+    "airborne_fraction_multidecadal": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

@@ -1,0 +1,208 @@
+# acceptance_gates.yaml
+# Generated: 2025-10-18 22:18 UTC
+# Source: Must-Verify Items.pdf (user upload)
+version: 0.5
+provenance:
+  source: "Must-Verify Items.pdf"
+  generated_utc: "2025-10-18 22:18 UTC"
+globals:
+  energy_closure:
+    description: "EEI ≈ ΔOHC over a decade (0–2000 m)"
+    method: "Short coupled run; compute TOA net flux and ocean heat content trend"
+    target: "abs(EEI - OHU) ≤ 0.2 W m^-2 (decadal mean)"
+    fail_if_negative_eei_after: 2000
+  aerosol_erf_range:
+    description: "Total aerosol ERF (ERFari+ERFaci, 1750→2019)"
+    target_range_wm2: [-2.0, -0.6]
+    subcomponents_required: ["ERFari", "ERFaci"]
+  sea_level_closure:
+    description: "GMSL trend ≈ steric + barystatic"
+    target_residual_mm_per_yr: 0.3
+  carbon_budget_closure:
+    description: "EFOS+ELUC – (S_ocean+S_land) – G_atm ≈ 0"
+    target_residual_GtCO2_per_yr: 0.3
+    airborne_fraction_range: [0.36, 0.50]
+  water_budget_closure:
+    description: "Global P–E–R–ΔS ≈ 0; ocean P–E ≈ runoff+ΔS; basin checks"
+    global_residual_target_mm_per_yr: 15
+    land_residual_target_mm_per_yr: 25
+    basin_residual_tolerance_mm_per_yr: 25
+  hydrology_extremes_scaling:
+    description: "Rx1day scaling within CC physics bounds"
+    target_percent_per_K: [5, 15]
+  temperature_response:
+    description: "ECS/TCR in AR6 likely ranges; hindcast GMST skill reasonable"
+    action: "Fail if median ECS or TCR is >95% outside AR6 likely range"
+  tracer_conservation:
+    description: "Per-coupling-step mass/energy conservation"
+    requirement: "Global ocean+ice freshwater closes within machine precision annually"
+  rf_vs_erf_consistency:
+    description: "All forcings are ERF (no RF mixed in EBM inputs)"
+    requirement: true
+  uncertainty_propagation:
+    description: "Monte Carlo/ensemble envelopes reported in CI for key quantities"
+    requirement: true
+  coupler_b4b:
+    description: "Post-coupler bit-for-bit and budget balance check after each exchange"
+    requirement: true
+
+modules:
+  module_1_forcings:
+    tests:
+      - key: co2_erf_1750_2019
+        target_wm2: 2.16
+        tolerance_wm2: 0.26
+      - key: total_anthropogenic_erf_2019
+        approx_wm2: 2.72
+        tolerance_wm2: 0.76
+      - key: tropospheric_o3_erf
+        approx_wm2: 0.47
+      - key: aerosol_erf_2019_range
+        range_wm2: [-1.7, -0.4]
+      - key: post_2010_aerosol_weakening_detected
+        requirement: true
+      - key: rf_erf_consistency
+        requirement: true
+      - key: lulcc_erf_from_land_module
+        requirement: true
+      - key: no_double_count_lulcc
+        requirement: true
+
+  module_2_atmosphere_dynamics:
+    tests:
+      - key: toa_net_flux_bias_vs_CERES
+        max_abs_wm2: 0.2
+      - key: cre_sw_lw_global
+        sw_wm2_range: [-55, -45]
+        lw_wm2_range: [25, 35]
+        net_wm2_approx: -20
+      - key: jets_hadley_width_bias_vs_ERA5
+        within_degrees: 3
+      - key: lapse_rate_humidity_rmsd
+        target: "Comparable to CMIP climatologies"
+      - key: meridional_heat_transport_bias
+        within_percent_of_CERES: 10
+
+  module_3_clouds_convection:
+    tests:
+      - key: global_cre_net
+        net_wm2_range: [-23, -17]
+        sw_wm2_range: [-55, -45]
+        lw_wm2_range: [25, 35]
+      - key: tropical_precip_diurnal_cycle
+        target: "Amplitude/phase within observational spread"
+      - key: low_cloud_fraction_vs_EIS
+        target: "Matches satellite-derived curve"
+
+  module_4_hydrology:
+    tests:
+      - key: global_water_budget_residual
+        max_mm_per_yr: 15
+      - key: land_water_budget_residual
+        max_mm_per_yr: 25
+      - key: extremes_scaling_rx1day
+        percent_per_K_range: [5, 15]
+      - key: drought_events_detected
+        examples: ["2002-03", "2010", "2015-16", "2020-22"]
+
+  module_5_land_lulcc:
+    tests:
+      - key: albedo_bias_by_biome
+        max_abs: 0.02
+      - key: tower_flux_bias
+        lh_sh_bias_wm2: 15
+      - key: lulcc_albedo_erf
+        range_wm2: [-0.30, -0.10]
+        consistent_with_module_1: true
+
+  module_6_ocean_heat_uptake:
+    tests:
+      - key: ohc_trend_1993_present
+        target: "Within observational uncertainty"
+      - key: global_ohu_equals_eei
+        tolerance_wm2: 0.2
+      - key: mld_climatology_rmse
+        target: "Comparable to Holte–Talley"
+
+  module_7_sea_ice:
+    tests:
+      - key: seasonal_cycle_extent_area
+        target: "Within observed spread; Arctic trend captured"
+      - key: winter_thickness_distribution
+        target: "Within satellite uncertainty"
+
+  module_8_cryo:
+    tests:
+      - key: ais_gris_mass_change_rmse
+        target: "Within IMBIE uncertainty"
+      - key: global_glacier_loss_rate
+        target: "Consistent with WGMS/IMBIE consensus"
+      - key: permafrost_active_layer_trend
+        target: "Sign correct regionally"
+      - key: permafrost_carbon_emissions
+        target: "Within Arctic synthesis bounds"
+
+  module_9_carbon_cycle:
+    tests:
+      - key: carbon_budget_residual
+        max_GtCO2_per_yr: 0.3
+      - key: airborne_fraction
+        range: [0.36, 0.50]
+      - key: ocean_pCO2_trends
+        target: "SOCAT consistency (basin-wise)"
+      - key: interior_dic_ph_trends
+        target: "Within GLODAP error"
+      - key: land_beta_gamma_posteriors
+        target: "Plausible, prior-informed"
+      - key: drought_anomalies_reproduced
+        examples: ["2010-16"]
+
+  module_10_aerosols_chemistry:
+    tests:
+      - key: global_aod_bias
+        max_abs: 0.05
+      - key: ssa_aaod_site_correlation
+        min_value: 0.6
+      - key: total_aerosol_erf_range
+        range_wm2: [-2.0, -0.6]
+        require_components: ["ERFari", "ERFaci"]
+      - key: post_2010_aerosol_weakening_sign
+        requirement: true
+      - key: ch4_lifetime_years
+        range_years: [8, 12]
+      - key: o3_burden_consistency
+        target: "Within literature range"
+
+  module_11_sea_level:
+    tests:
+      - key: global_budget_residual_trend
+        max_mm_per_yr: 0.3
+      - key: gmsl_acceleration_range
+        target: "Within IPCC ranges"
+      - key: regional_rsl_skill
+        target: "On par with recent reconstructions (with VLM)"
+      - key: component_shares_match
+        source_modules: [6, 8]
+
+  module_12_energy_balance_response:
+    tests:
+      - key: ecs_tcr_medians
+        target: "Within AR6 likely ranges"
+      - key: decadal_eei_sign
+        target: "Positive; within AR6 uncertainty envelope"
+      - key: ohc_rmse
+        target: "Competitive vs observations; no drift"
+      - key: ecs_aerosol_sensitivity_panel
+        requirement: true
+
+  module_16_scenarios:
+    tests:
+      - key: historical_replication
+        variables: ["GHG", "GMST"]
+        target: "Within observational uncertainty"
+      - key: aerosol_co_benefits
+        target: "Global cooling from aerosol reduction visible; no hidden compensation"
+      - key: carbon_budget_consistency
+        target: "Matches AR6/SSP benchmarks"
+      - key: no_double_count_lulucf
+        requirement: true

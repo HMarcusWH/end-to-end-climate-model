@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "atmos/ceres_eval.json",
+  "type": "object",
+  "required": [
+    "TOA_net_bias_Wm2",
+    "CRE_SW_global_Wm2",
+    "CRE_LW_global_Wm2",
+    "CRE_NET_global_Wm2"
+  ],
+  "properties": {
+    "TOA_net_bias_Wm2": {
+      "type": "number"
+    },
+    "CRE_SW_global_Wm2": {
+      "type": "number"
+    },
+    "CRE_LW_global_Wm2": {
+      "type": "number"
+    },
+    "CRE_NET_global_Wm2": {
+      "type": "number"
+    }
+  }
+}

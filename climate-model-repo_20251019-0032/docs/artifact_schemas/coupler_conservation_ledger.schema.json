@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "coupler/conservation_ledger.json",
+  "type": "object",
+  "required": [
+    "global_energy_leak_Wm2",
+    "global_water_leak_kgm2s"
+  ],
+  "properties": {
+    "global_energy_leak_Wm2": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "global_water_leak_kgm2s": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    }
+  }
+}

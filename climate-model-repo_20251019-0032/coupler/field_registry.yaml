@@ -1,0 +1,42 @@
+version: 0.1
+grid_exchange:
+  algorithm: "conservative-second-order"
+  restart_policy: "bit-for-bit"
+bulk_flux:
+  algorithm: "COARE3.6"
+  neutral_adjustment: true
+  gustiness: true
+fields:
+  - name: heat_flux
+    units: "W m-2"
+    conservative: true
+    sign: "into_ocean"
+    src: atmosphere
+    dst: ocean
+    diagnostics: ["global_sum","per_basin_sum"]
+  - name: freshwater_flux
+    units: "kg m-2 s-1"
+    conservative: true
+    sign: "into_ocean"
+    src: atmosphere
+    dst: ocean
+    diagnostics: ["global_sum","per_basin_sum"]
+  - name: shortwave_down
+    units: "W m-2"
+    conservative: false
+    src: atmosphere
+    dst: ocean
+  - name: runoff
+    units: "kg m-2 s-1"
+    conservative: true
+    src: land
+    dst: ocean
+    diagnostics: ["per_basin_sum"]
+  - name: ice_melt_freshwater
+    units: "kg m-2 s-1"
+    conservative: true
+    src: sea_ice
+    dst: ocean
+provenance:
+  checksum_on_exchange: "sha256"
+  ledger_outputs: "coupler/conservation_ledger.json"

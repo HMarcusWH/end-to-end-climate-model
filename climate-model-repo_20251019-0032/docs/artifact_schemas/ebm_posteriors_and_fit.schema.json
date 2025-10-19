@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ebm/posteriors_and_fit.json",
+  "type": "object",
+  "required": [
+    "ECS_median",
+    "TCR_median",
+    "EEI_2005_2020_mean_Wm2"
+  ],
+  "properties": {
+    "ECS_median": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 8.0
+    },
+    "TCR_median": {
+      "type": "number",
+      "minimum": 0.3,
+      "maximum": 4.0
+    },
+    "EEI_2005_2020_mean_Wm2": {
+      "type": "number"
+    }
+  },
+  "additionalProperties": true
+}
