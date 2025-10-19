@@ -1,0 +1,8 @@
+{
+  "reference_period": "1993-2020",
+  "steric_trend_mm_per_yr": 1.4,
+  "barystatic_trend_mm_per_yr": 1.5,
+  "gmsl_trend_mm_per_yr": 2.9,
+  "residual_trend_mm_per_yr": 0.0,
+  "notes": "Synthetic closure consistent with AR6 Table 9.5"
+}

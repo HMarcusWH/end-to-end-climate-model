@@ -1,0 +1,37 @@
+version: 0.1
+catalog:
+  aerosol_erf:
+    description: "Anthropogenic aerosol effective radiative forcing (1750-2019)"
+    source: "AR6 Working Group I, Chapter 7 synthesis"
+    url: "https://data.ipcc.ch/ERF/aerosol/ar6_wgi_ch7_v2021-07.csv"
+    local_path: "data/forcing/aerosol_erf_ar6.csv"
+    checksum:
+      algorithm: sha256
+      value: "0000000000000000000000000000000000000000000000000000000000000000"
+  methane_lifetime:
+    description: "Modeled tropospheric methane lifetime ensemble"
+    source: "GCP Methane Budget 2020"
+    url: "https://zenodo.org/record/6385343/files/methane_lifetime_ensemble.nc"
+    local_path: "data/chem/methane_lifetime_ensemble.nc"
+    checksum:
+      algorithm: sha256
+      value: "0000000000000000000000000000000000000000000000000000000000000000"
+  ocean_heat_content:
+    description: "Global 0-2000 m ocean heat content (1993-present)"
+    source: "IAP OHC v2023"
+    url: "https://climate.metoffice.gov.uk/ohc/IAP_OHC_0-2000m_2023.nc"
+    local_path: "data/ocean/iap_ohc_0_2000m_2023.nc"
+    checksum:
+      algorithm: sha256
+      value: "0000000000000000000000000000000000000000000000000000000000000000"
+  sea_level_budget:
+    description: "Global mean sea level budget components"
+    source: "NASA GSFC v5.1 closure product"
+    url: "https://sealevel.nasa.gov/data_products/archives/closure_v5.1.nc"
+    local_path: "data/sealevel/closure_v5_1.nc"
+    checksum:
+      algorithm: sha256
+      value: "0000000000000000000000000000000000000000000000000000000000000000"
+notes:
+  - "Checksums are placeholders until first data ingest."
+  - "All dataset versions correspond to IPCC AR6 assessment intervals."

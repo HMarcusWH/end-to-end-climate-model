@@ -1,0 +1,6 @@
+{
+  "time_axis": "monthly",
+  "global_energy_leak_Wm2": [0.01, -0.02, 0.00, 0.01, -0.01, 0.00],
+  "global_water_leak_kgm2s": [1.0e-08, -8.0e-09, 7.0e-09, -6.0e-09, 5.0e-09, -5.0e-09],
+  "notes": "Budget residuals intentionally near zero to exercise CI gate"
+}

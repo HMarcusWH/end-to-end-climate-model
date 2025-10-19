@@ -1,0 +1,7 @@
+{
+  "reference_period": "2005-2020",
+  "layer": "0-2000m",
+  "dHdt_Wm2": 0.72,
+  "trend_uncertainty_Wm2": 0.12,
+  "source": "IAP 2023 ensemble placeholder"
+}

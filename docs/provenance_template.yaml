@@ -1,0 +1,51 @@
+run:
+  id: "YYYYMMDD-hhmm"
+  model_tag: "v0.5"
+forcings:
+  datasets:
+    solar: "SATIRE-v2 @ version X"
+    volcanic: "GISS vYYYYMM"
+    ghg: "NOAA GML vX.Y"
+    aerosols: "CMIP6-histAER vX"
+  ERF_method: "double-call, APRP-check"
+chemistry:
+  OH_source: "Module10 @ commit <hash>"
+  methane_lifetime_years: 9.3
+land:
+  LULCC_mask: "LUH2 v2h @ YYYY"
+  albedo_method: "SNICAR-2 / 2-stream"
+sea_level:
+  GIA_model: "ICE-6G_D (VM5a)"
+  VLM_source: "GPS+GRD-corrected, dataset XYZ"
+  steric_method: "TEOS-10"
+ocean:
+  basins_mask: "WCRP-standard vX"
+coupler:
+  bulk_flux: "COARE3.6"
+  regrid: "conservative-2nd"
+constants_file: "shared/constants.yaml@<hash>"
+artifacts:
+  chem:
+    file: "artifacts/chem/diagnostics.json"
+    units:
+      industrial_era_ERF_total: "W m^-2"
+      ch4_lifetime_years: "years"
+  ocean:
+    file: "artifacts/ocean/ohc_summary.json"
+    units:
+      dHdt_Wm2: "W m^-2"
+  sealevel:
+    file: "artifacts/sealevel/closure.json"
+    units:
+      residual_trend_mm_per_yr: "mm yr^-1"
+  ebm:
+    file: "artifacts/ebm/posteriors_and_fit.json"
+    units:
+      ECS_median: "K"
+      TCR_median: "K"
+      EEI_2005_2020_mean_Wm2: "W m^-2"
+  coupler:
+    file: "artifacts/coupler/conservation_ledger.json"
+    units:
+      global_energy_leak_Wm2: "W m^-2"
+      global_water_leak_kgm2s: "kg m^-2 s^-1"
