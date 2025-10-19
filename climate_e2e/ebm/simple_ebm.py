@@ -12,9 +12,9 @@ import numpy as np
 class TwoLayerEBMConfig:
     """Configuration for the two-layer EBM."""
 
-    heat_capacity_upper: float = 2.1e8  # J m^-2 K^-1 (~50 m mixed layer)
-    heat_capacity_deep: float = 3.0e9  # J m^-2 K^-1 (~700 m equivalent)
-    lambda_mag: float = 1.05  # W m^-2 K^-1 (positive magnitude)
+    heat_capacity_upper: float = 4.18e7  # J m^-2 K^-1 (~50 m mixed layer)
+    heat_capacity_deep: float = 3.3e8  # J m^-2 K^-1 (~700 m equivalent)
+    feedback_parameter: float = 1.05  # W m^-2 K^-1 (positive magnitude)
     ocean_heat_uptake_efficiency: float = 0.65  # W m^-2 K^-1
 
 
@@ -25,15 +25,22 @@ class EBMDiagnostics:
     surface_temperature: np.ndarray
     deep_temperature: np.ndarray
     eei: np.ndarray
-    lambda_mag: float
 
     def equilibrium_climate_sensitivity(self, forcing_2xco2: float = 3.93) -> float:
-        """Return the ECS implied by the configured feedback magnitude."""
+        """Return the ECS implied by the feedback parameter."""
 
-        return forcing_2xco2 / self.lambda_mag
+        return forcing_2xco2 / self.feedback_parameter
 
+    @property
+    def feedback_parameter(self) -> float:
+        """Infer the feedback parameter from the EEI and surface temperature time series."""
 
-SECONDS_PER_YEAR = 31557600.0
+        # Avoid divide by zero by using the last non-zero temperature change.
+        surface_delta = self.surface_temperature[-1] - self.surface_temperature[0]
+        eei_delta = self.eei[-1] - self.eei[0]
+        if np.isclose(surface_delta, 0.0):
+            return np.nan
+        return max(1e-6, abs(eei_delta / surface_delta))
 
 
 def integrate_two_layer_ebm(
@@ -72,9 +79,9 @@ def integrate_two_layer_ebm(
     surface_temp[0] = initial_surface_temp
     deep_temp[0] = initial_deep_temp
 
-    dt_seconds = dt_years * SECONDS_PER_YEAR
+    dt_seconds = dt_years * 31557600.0
 
-    lambda_eff = cfg.lambda_mag
+    lambda_eff = cfg.feedback_parameter
     gamma = cfg.ocean_heat_uptake_efficiency
 
     for i in range(1, n_steps):
@@ -102,12 +109,7 @@ def integrate_two_layer_ebm(
         forcing[-1] - lambda_eff * surface_temp[-1] - gamma * (surface_temp[-1] - deep_temp[-1])
     )
 
-    return EBMDiagnostics(
-        surface_temperature=surface_temp,
-        deep_temperature=deep_temp,
-        eei=eei,
-        lambda_mag=lambda_eff,
-    )
+    return EBMDiagnostics(surface_temperature=surface_temp, deep_temperature=deep_temp, eei=eei)
 
 
 def estimate_thermal_response(
@@ -117,51 +119,21 @@ def estimate_thermal_response(
 ) -> tuple[float, float]:
     """Estimate ECS and TCR given forcing and GMST observations.
 
-    The method integrates the supplied forcing, returning the ECS implied by the
-    configured feedback magnitude. For the transient climate response it inspects the
-    forcing series: if it resembles a 1 % yr⁻¹ CO₂ experiment the 70th-year response is
-    returned; otherwise, a synthetic 1 % yr⁻¹ experiment is generated using the same
-    EBM configuration to provide a comparable TCR metric.
+    The implementation is intentionally lightweight: it integrates the EBM using the
+    supplied forcing, compares the transient response at the 70th step (approximate
+    1% CO₂ per year experiment), and infers ECS from the feedback parameter.
     """
 
-    forcing_array = np.asarray(list(forcing), dtype=float)
-    cfg = config or TwoLayerEBMConfig()
-    diagnostics = integrate_two_layer_ebm(forcing_array, config=cfg)
+    diagnostics = integrate_two_layer_ebm(forcing, config=config)
     surface = diagnostics.surface_temperature
     obs = np.asarray(list(gmst_observations), dtype=float)
     if obs.size != surface.size:
         raise ValueError("Forcing and observation series must have the same length.")
 
     ecs = diagnostics.equilibrium_climate_sensitivity()
-    if _looks_like_onepct_forcing(forcing_array):
-        tcr_index = min(69, surface.size - 1)
-        tcr = surface[tcr_index]
-    else:
-        synthetic_forcing = _make_onepct_erf_series(n_years=70)
-        synthetic_diag = integrate_two_layer_ebm(synthetic_forcing, config=cfg)
-        tcr = synthetic_diag.surface_temperature[69]
+    tcr_index = min(69, surface.size - 1)
+    tcr = surface[tcr_index]
     return ecs, tcr
-
-
-def _looks_like_onepct_forcing(forcing: np.ndarray, forcing_2xco2: float = 3.93) -> bool:
-    """Heuristic to detect 1 % yr⁻¹ CO₂ ERF experiments."""
-
-    if forcing.size < 70 or not np.all(np.isfinite(forcing)):
-        return False
-    if np.any(np.diff(forcing) < -1e-6):
-        return False
-    if abs(forcing[0]) > 0.05:
-        return False
-    expected = forcing[min(69, forcing.size - 1)]
-    return 0.7 * forcing_2xco2 <= expected <= 1.3 * forcing_2xco2
-
-
-def _make_onepct_erf_series(n_years: int = 70, forcing_2xco2: float = 3.93) -> np.ndarray:
-    """Generate an ERF time series for a 1 % yr⁻¹ CO₂ experiment."""
-
-    years = np.arange(n_years, dtype=float)
-    concentration_ratio = 1.01 ** years
-    return forcing_2xco2 * np.log(concentration_ratio) / np.log(2.0)
 
 
 __all__ = [

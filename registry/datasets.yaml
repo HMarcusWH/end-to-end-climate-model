@@ -32,22 +32,6 @@ catalog:
     checksum:
       algorithm: sha256
       value: "0000000000000000000000000000000000000000000000000000000000000000"
-  lulcc_erf:
-    description: "Land-use and land-cover change ERF (historical)"
-    source: "AR6 WG1 Chapter 7 assessment"
-    url: "https://data.ipcc.ch/ERF/lulcc/ar6_wgi_ch7_lulcc.csv"
-    local_path: "data/forcing/lulcc_erf_ar6.csv"
-    checksum:
-      algorithm: sha256
-      value: "0000000000000000000000000000000000000000000000000000000000000000"
-  post2010_aerosol_weakening:
-    description: "Post-2010 aerosol ERF weakening diagnostics"
-    source: "AerChemMIP multi-model ensemble"
-    url: "https://example.org/aerchemmip/post2010_weakening.csv"
-    local_path: "data/chem/post2010_weakening.csv"
-    checksum:
-      algorithm: sha256
-      value: "0000000000000000000000000000000000000000000000000000000000000000"
 notes:
   - "Checksums are placeholders until first data ingest."
   - "All dataset versions correspond to IPCC AR6 assessment intervals."

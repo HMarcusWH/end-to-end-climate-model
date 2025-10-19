@@ -30,8 +30,6 @@ artifacts:
     units:
       industrial_era_ERF_total: "W m^-2"
       ch4_lifetime_years: "years"
-    notes:
-      forcing_convention: "ERF"
   ocean:
     file: "artifacts/ocean/ohc_summary.json"
     units:
@@ -51,16 +49,3 @@ artifacts:
     units:
       global_energy_leak_Wm2: "W m^-2"
       global_water_leak_kgm2s: "kg m^-2 s^-1"
-  carbon:
-    file: "artifacts/carbon/budget_summary.json"
-    units:
-      residual_GtCO2_per_yr_decadal: "Gt CO2 yr^-1"
-      airborne_fraction_multidecadal: "fraction"
-  land:
-    file: "land/erf_lulcc_timeseries.csv"
-    units:
-      erf_wm2: "W m^-2"
-  chem_erf:
-    file: "chem/erf/post2010_weakening_metric.json"
-    units:
-      weakening_percent_since_2010: "%"

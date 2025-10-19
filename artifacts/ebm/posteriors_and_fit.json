@@ -4,7 +4,7 @@
   "TCR_median": 1.8,
   "TCR_66_range": [1.4, 2.2],
   "EEI_2005_2020_mean_Wm2": 0.70,
-  "lambda_Wm2K_magnitude": 1.05,
+  "lambda_Wm2K_median": -1.05,
   "kappa_Wm2K": 0.65,
-  "notes": "Toy inversion using simple_ebm placeholder parameters with ERF-based F2x"
+  "notes": "Toy inversion using simple_ebm placeholder parameters"
 }
