@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "climate_e2e"
+version = "0.0.1"
+description = "Scaffold for an end-to-end climate model pipeline"
+authors = [
+  { name = "Climate Systems Team" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "pandas",
+  "xarray",
+  "jsonschema",
+  "pytest",
+  "ruff",
+  "black",
+  "pyyaml"
+]
+
+[project.optional-dependencies]
+dev = ["pre-commit"]
+
+[tool.setuptools]
+packages = ["climate_e2e"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "B",
+  "UP"
+]
+
+[tool.black]
+line-length = 100

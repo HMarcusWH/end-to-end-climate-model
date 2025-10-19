@@ -1,0 +1,18 @@
+version: 0.1
+units: SI
+energy_budget:
+  seconds_per_year: 31557600  # s
+  ocean_mixed_layer_heat_capacity_J_per_m2K: 210000000  # J m^-2 K^-1 (50 m mixed layer)
+  deep_ocean_heat_capacity_J_per_m2K: 3000000000  # J m^-2 K^-1 (~700 m equivalent)
+  climate_feedback_parameter_magnitude_Wm2K: 1.05  # W m^-2 K^-1 (positive magnitude)
+carbon_cycle:
+  gigatonne_carbon_to_CO2: 3.664  # GtC to GtCO2
+  ppm_to_GtCO2: 7.81  # Approximate conversion factor
+radiative_forcing:
+  reference_year: 1750
+  industrial_era_span_years: 269
+sea_level:
+  steric_coefficient_mm_per_Wm2: 0.45  # Rule-of-thumb conversion
+metadata:
+  description: "Centralized physical constants shared across silos"
+  last_reviewed: "2024-10-19"
