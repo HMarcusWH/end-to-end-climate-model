@@ -13,14 +13,14 @@ fields:
     sign: "into_ocean"
     src: atmosphere
     dst: ocean
-    diagnostics: ["global_sum","per_basin_sum"]
+    diagnostics: ["global_sum", "per_basin_sum"]
   - name: freshwater_flux
     units: "kg m-2 s-1"
     conservative: true
     sign: "into_ocean"
     src: atmosphere
     dst: ocean
-    diagnostics: ["global_sum","per_basin_sum"]
+    diagnostics: ["global_sum", "per_basin_sum"]
   - name: shortwave_down
     units: "W m-2"
     conservative: false
@@ -39,4 +39,4 @@ fields:
     dst: ocean
 provenance:
   checksum_on_exchange: "sha256"
-  ledger_outputs: "coupler/conservation_ledger.json"
+  ledger_outputs: "artifacts/coupler/conservation_ledger.json"
