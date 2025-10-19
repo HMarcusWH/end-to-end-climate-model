@@ -1,4 +1,5 @@
 """Acceptance gate regression tests for the E2E scaffold."""
+
 from __future__ import annotations
 
 import json
@@ -24,9 +25,9 @@ def test_aerosol_erf_within_gate():
     target_min, target_max = gates["globals"]["aerosol_erf_range"]["target_range_wm2"]
     chem = load_json(ROOT / "artifacts" / "chem" / "diagnostics.json")
     industrial_erf = chem["industrial_era_ERF_total"]
-    assert target_min <= industrial_erf <= target_max, (
-        "Aerosol ERF must remain within the AR6 likely range; note this gate expects ERF, not RF."
-    )
+    assert (
+        target_min <= industrial_erf <= target_max
+    ), "Aerosol ERF must remain within the AR6 likely range; note this gate expects ERF, not RF."
 
 
 def test_eei_matches_ohc_sign_and_magnitude():

@@ -30,6 +30,8 @@ packages = ["climate_e2e"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
 select = [
   "E",
   "F",

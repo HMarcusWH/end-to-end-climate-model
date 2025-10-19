@@ -1,8 +1,9 @@
 """Simple two-layer energy balance model utilities."""
+
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable, Tuple
 
 import numpy as np
 
@@ -86,24 +87,26 @@ def integrate_two_layer_ebm(
     for i in range(1, n_steps):
         q = forcing[i - 1]
         delta_surface = (
-            q
-            - lambda_eff * surface_temp[i - 1]
-            - gamma * (surface_temp[i - 1] - deep_temp[i - 1])
-        ) * dt_seconds / cfg.heat_capacity_upper
+            (
+                q
+                - lambda_eff * surface_temp[i - 1]
+                - gamma * (surface_temp[i - 1] - deep_temp[i - 1])
+            )
+            * dt_seconds
+            / cfg.heat_capacity_upper
+        )
         delta_deep = (
             gamma * (surface_temp[i - 1] - deep_temp[i - 1]) * dt_seconds / cfg.heat_capacity_deep
         )
         surface_temp[i] = surface_temp[i - 1] + delta_surface
         deep_temp[i] = deep_temp[i - 1] + delta_deep
-        eei[i - 1] = q - lambda_eff * surface_temp[i - 1] - gamma * (
-            surface_temp[i - 1] - deep_temp[i - 1]
+        eei[i - 1] = (
+            q - lambda_eff * surface_temp[i - 1] - gamma * (surface_temp[i - 1] - deep_temp[i - 1])
         )
 
     # Last time step EEI assumes steady forcing of the final entry.
     eei[-1] = (
-        forcing[-1]
-        - lambda_eff * surface_temp[-1]
-        - gamma * (surface_temp[-1] - deep_temp[-1])
+        forcing[-1] - lambda_eff * surface_temp[-1] - gamma * (surface_temp[-1] - deep_temp[-1])
     )
 
     return EBMDiagnostics(surface_temperature=surface_temp, deep_temperature=deep_temp, eei=eei)
@@ -113,7 +116,7 @@ def estimate_thermal_response(
     forcing: Iterable[float],
     gmst_observations: Iterable[float],
     config: TwoLayerEBMConfig | None = None,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Estimate ECS and TCR given forcing and GMST observations.
 
     The implementation is intentionally lightweight: it integrates the EBM using the
