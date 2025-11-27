@@ -172,6 +172,7 @@ def estimate_thermal_response(
     forcing: Iterable[float],
     gmst_observations: Iterable[float],
     config: TwoLayerEBMConfig | None = None,
+    dt_years: float = 1.0,
 ) -> tuple[float, float]:
     """Estimate ECS and TCR given forcing and GMST observations."""
 
