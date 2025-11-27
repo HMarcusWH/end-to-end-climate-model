@@ -27,8 +27,8 @@ dev = [
   "black"
 ]
 
-[tool.setuptools]
-packages = ["climate_e2e"]
+[tool.setuptools.packages.find]
+include = ["climate_e2e*"]
 
 [tool.ruff]
 line-length = 100
