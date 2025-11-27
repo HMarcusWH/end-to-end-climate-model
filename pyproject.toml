@@ -16,14 +16,16 @@ dependencies = [
   "pandas",
   "xarray",
   "jsonschema",
-  "pytest",
-  "ruff",
-  "black",
   "pyyaml"
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit"]
+dev = [
+  "pre-commit",
+  "pytest",
+  "ruff",
+  "black"
+]
 
 [tool.setuptools]
 packages = ["climate_e2e"]
