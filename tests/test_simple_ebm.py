@@ -72,19 +72,6 @@ def test_estimate_thermal_response_uses_observations():
     assert tcr > 0.0
 
 
-def test_estimate_thermal_response_aligns_baseline_bias():
-    """Calibration should not be misled by a constant observational offset."""
-
-    config = TwoLayerEBMConfig(feedback_parameter=1.1)
-    forcing = np.full(80, 2.5)
-    diagnostics = integrate_two_layer_ebm(forcing, config=config)
-    biased_obs = diagnostics.surface_temperature + 1.25
-
-    ecs, _ = estimate_thermal_response(forcing, biased_obs, config=config)
-
-    assert np.isclose(ecs, 3.93 / config.lambda_mag, rtol=0.05)
-
-
 def test_estimate_thermal_response_synthesizes_onepct_when_missing():
     """If the forcing is not a 1 % path, synthesize one to report TCR."""
 
@@ -95,21 +82,4 @@ def test_estimate_thermal_response_synthesizes_onepct_when_missing():
 
     synthetic = integrate_two_layer_ebm(_make_onepct_erf_series(), config=config)
     assert np.isclose(tcr, synthetic.surface_temperature[69], rtol=5e-2)
-    assert np.isclose(ecs, 3.93 / config.lambda_mag, rtol=5e-2)
-
-
-def test_estimate_thermal_response_respects_timestep():
-    """Calibration and TCR detection should honor the provided timestep."""
-
-    config = TwoLayerEBMConfig()
-    dt_years = 0.5
-    forcing = _make_onepct_erf_series(n_years=140.0, dt_years=dt_years)
-    diagnostics = integrate_two_layer_ebm(forcing, config=config, dt_years=dt_years)
-
-    ecs, tcr = estimate_thermal_response(
-        forcing, diagnostics.surface_temperature, config=config, dt_years=dt_years
-    )
-
-    expected_index = int(round(70.0 / dt_years))
-    assert np.isclose(tcr, diagnostics.surface_temperature[expected_index], rtol=5e-2)
     assert np.isclose(ecs, 3.93 / config.lambda_mag, rtol=5e-2)

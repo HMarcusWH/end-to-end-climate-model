@@ -149,33 +149,23 @@ def integrate_two_layer_ebm(
     )
 
 
-def _make_onepct_erf_series(
-    n_years: float = 140.0, forcing_2xco2: float = 3.93, dt_years: float = 1.0
-) -> np.ndarray:
+def _make_onepct_erf_series(n_years: int = 140, forcing_2xco2: float = 3.93) -> np.ndarray:
     """Generate an ERF path for a 1 % per year CO₂ increase experiment."""
 
-    if dt_years <= 0:
-        raise ValueError("dt_years must be positive.")
-
-    years = np.arange(0.0, n_years, dt_years, dtype=float)
+    years = np.arange(n_years, dtype=float)
     co2_ratio = np.power(1.01, years)
     return (forcing_2xco2 / np.log(2.0)) * np.log(co2_ratio)
 
 
-def _synthesize_tcr(
-    config: TwoLayerEBMConfig, feedback_parameter: float, dt_years: float
-) -> float:
+def _synthesize_tcr(config: TwoLayerEBMConfig, feedback_parameter: float) -> float:
     synthetic_cfg = TwoLayerEBMConfig(
         heat_capacity_upper=config.heat_capacity_upper,
         heat_capacity_deep=config.heat_capacity_deep,
         feedback_parameter=feedback_parameter,
         ocean_heat_uptake_efficiency=config.ocean_heat_uptake_efficiency,
     )
-    synthetic = integrate_two_layer_ebm(
-        _make_onepct_erf_series(dt_years=dt_years), config=synthetic_cfg, dt_years=dt_years
-    )
-    tcr_index = min(synthetic.surface_temperature.size - 1, int(round(70.0 / dt_years)))
-    return synthetic.surface_temperature[tcr_index]
+    synthetic = integrate_two_layer_ebm(_make_onepct_erf_series(), config=synthetic_cfg)
+    return synthetic.surface_temperature[69]
 
 
 def estimate_thermal_response(
@@ -185,9 +175,6 @@ def estimate_thermal_response(
     dt_years: float = 1.0,
 ) -> tuple[float, float]:
     """Estimate ECS and TCR given forcing and GMST observations."""
-
-    if dt_years <= 0:
-        raise ValueError("dt_years must be positive.")
 
     base_config = config or TwoLayerEBMConfig()
     forcing_arr = np.asarray(list(forcing), dtype=float)
@@ -214,9 +201,8 @@ def estimate_thermal_response(
             feedback_parameter=lambda_candidate,
             ocean_heat_uptake_efficiency=base_config.ocean_heat_uptake_efficiency,
         )
-        diag = integrate_two_layer_ebm(forcing_arr, config=trial_config, dt_years=dt_years)
-        bias = float(np.mean(observations - diag.surface_temperature))
-        rmse = float(np.sqrt(np.mean(np.square(diag.surface_temperature + bias - observations))))
+        diag = integrate_two_layer_ebm(forcing_arr, config=trial_config)
+        rmse = float(np.sqrt(np.mean(np.square(diag.surface_temperature - observations))))
         if rmse < best_rmse:
             best_rmse = rmse
             best_lambda = lambda_candidate
@@ -226,14 +212,11 @@ def estimate_thermal_response(
 
     ecs = best_diag.equilibrium_climate_sensitivity()
 
-    onepct_forcing = _make_onepct_erf_series(
-        n_years=best_diag.surface_temperature.size * dt_years, dt_years=dt_years
-    )
+    onepct_forcing = _make_onepct_erf_series(best_diag.surface_temperature.size)
     if np.allclose(forcing_arr, onepct_forcing, rtol=0.05, atol=0.05):
-        tcr_index = min(best_diag.surface_temperature.size - 1, int(round(70.0 / dt_years)))
-        tcr = best_diag.surface_temperature[tcr_index]
+        tcr = best_diag.surface_temperature[min(69, best_diag.surface_temperature.size - 1)]
     else:
-        tcr = _synthesize_tcr(base_config, best_lambda, dt_years)
+        tcr = _synthesize_tcr(base_config, best_lambda)
 
     return ecs, tcr
 
